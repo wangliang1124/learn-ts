@@ -55,7 +55,7 @@ export default {
 
         let stringNumeric = new GenericNumber<string>();
         stringNumeric.zeroValue = "hello";
-        stringNumeric.add = function(x, y) {
+        stringNumeric.add = function (x, y) {
             return x + y;
         };
 
@@ -114,4 +114,76 @@ export default {
         console.log(createInstance(Lion)); // typechecks!
         console.log(createInstance(Bee)); // typechecks!
     },
+    test2() {
+        // type num = 1;
+        // type str = "hello world";
+
+        // type IsNumber<N> = N extends number ? "yes, is a number" : "no, not a number";
+
+        // type result1 = IsNumber<num>; // "yes, is a number"
+        // type result2 = IsNumber<str>; // "no, not a number"
+        // const res: result1 = "yes, is a number";
+        // console.log(res);
+
+        // 这里定义一个工具类型，简化代码
+        type ReplaceValByOwnKey<T, S extends any> = { [P in keyof T]: S[P] };
+
+        // shift action
+        type ShiftAction<T extends any[]> = ((...args: T) => any) extends (arg1: any, ...rest: infer R) => any
+            ? R
+            : never;
+
+        // unshift action
+        type UnshiftAction<T extends any[], A> = ((args1: A, ...rest: T) => any) extends (...args: infer R) => any
+            ? R
+            : never;
+
+        // pop action
+        type PopAction<T extends any[]> = ReplaceValByOwnKey<ShiftAction<T>, T>;
+
+        // push action
+        type PushAction<T extends any[], E> = ReplaceValByOwnKey<UnshiftAction<T, any>, T & { [k: string]: E }>;
+
+        // test ...
+        type tuple = ["vue", "react", "angular"];
+
+        type resultWithShiftAction = ShiftAction<tuple>; // ["react", "angular"]
+        type resultWithUnshiftAction = UnshiftAction<tuple, "jquery">; // ["jquery", "vue", "react", "angular"]
+        type resultWithPopAction = PopAction<tuple>; // ["vue", "react"]
+        type resultWithPushAction = PushAction<tuple, "jquery">; // ["vue", "react", "angular", "jquery"]
+    },
+    test3() {
+        // create({ prop: 0 }); // OK
+        // create(null); // Error
+        // create(undefined); // Error
+        // create(42); // OK
+        // create("string"); // OK
+        // create(false); // OK
+        // create({
+        //     toString() {
+        //         return 3;
+        //     },
+        // }); // OK
+
+        const enum ActiveType {
+            active = 1,
+            inactive = 2,
+        }
+
+        function isActive(type: ActiveType) {}
+        isActive(ActiveType.active);
+
+        // ============================== compile result:
+        // function isActive(type) { }
+        // isActive(1 /* active */);
+
+        // ActiveType[1]; // Error
+        // ActiveType[10]; // Error
+
+        // type Foo<T extends object> = T extends object ? T : never;
+        // type F = Foo<Array<number>>; // 类型“number”不满足约束“object”。
+        // type G = Foo<number>; // 类型“string”不满足约束“object”。
+        // type H = Foo<{}>; // OK
+    },
 };
+declare function create(o: Object): void;

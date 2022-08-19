@@ -5,14 +5,14 @@ import "./App.css";
 // const { Interface } = require("./Interface");
 // import Classes from "./Classes";
 // import Functions from "./Functions";
-// import Generics from "./Generics";
+import Generics from "./Generics";
 // import Enum from "./Enum";
 // import TypeCompatibility from "./TypeCompatibility";
-import AdvancedTypes from "./AdvancedTypes";
+// import AdvancedTypes from "./AdvancedTypes";
 
 const App: React.FC = () => {
     // BasicTypes.test();
-    AdvancedTypes.test();
+    Generics.test2();
     return (
         <div className="App">
             <header className="App-header">Learn TypeScript</header>
